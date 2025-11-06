@@ -1,4 +1,4 @@
-import cartModel from "../models/cartModel";
+import cartModel from "../models/cartModel.js";
 
 // Générer un ID de commande unique
 const generateOrderId = () => {
