@@ -1,4 +1,4 @@
-import cartModel from "../models/cartModel";
+import cartModel from "../models/cartModel.js";
 import productModel from "../models/productModel.js";
 
 // Fonction utilitaire pour calculer le total du panier
@@ -11,7 +11,7 @@ const calculateCartTotal = (cart) => {
 };
 
 // GET /api/cart - Récupérer le panier de l'utilisateur
-export const getCart = async (req, res) => {
+const getCart = async (req, res) => {
     try {
         let cart = await cartModel.findOne({ userId: 'default-user' }).populate('items.productId');
 
