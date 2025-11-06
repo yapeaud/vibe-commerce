@@ -18,4 +18,5 @@ app.get('/', (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`🌐 Serveur en cours d'execution sur le port http://localhost:${PORT}`)
+    console.log(`🔌 API disponible sur http://localhost:${PORT}/api/`);
 })
