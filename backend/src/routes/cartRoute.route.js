@@ -4,12 +4,12 @@ import { getCart, addToCart, removeFromCart } from '../controllers/cartControlle
 const cartRouter = express.Router();
 
 // Route pour récupérer le panier
-cartRouter.get('/cart', getCart);
+cartRouter.get('/', getCart);
 
 // Route pour ajouter un produit au panier
-cartRouter.post('/cart', addToCart);
+cartRouter.post('/', addToCart);
 
 // Route pour supprimer un produit du panier
-cartRouter.delete('/cart/:productId', removeFromCart);
+cartRouter.delete('/:productId', removeFromCart);
 
 export default cartRouter;

@@ -14,14 +14,14 @@ export const getProducts = async (req, res) => {
 export const seedProducts = async (req, res) => {
     try {
         const products = [
-            { name: 'Smartphone', price: 599.99, description: 'Smartphone haut de gamme', category: 'Électronique' },
-            { name: 'Casque Audio', price: 149.99, description: 'Casque sans fil premium', category: 'Électronique' },
-            { name: 'Laptop', price: 1299.99, description: 'Ordinateur portable performant', category: 'Électronique' },
-            { name: 'Livre React', price: 29.99, description: 'Guide complet de React', category: 'Livres' },
-            { name: 'T-shirt', price: 19.99, description: 'T-shirt coton bio', category: 'Vêtements' },
-            { name: 'Cafetière', price: 79.99, description: 'Machine à café automatique', category: 'Maison' },
-            { name: 'Montre Connectée', price: 199.99, description: 'Montre fitness et notifications', category: 'Électronique' },
-            { name: 'Sac à Dos', price: 49.99, description: 'Sac ergonomique pour ordinateur', category: 'Accessoires' }
+            { name: 'Smartphone', price: 599.99, description: 'Smartphone haut de gamme', category: 'Électronique', image: 'https://example.com/smartphone.image' },
+            { name: 'Casque Audio', price: 149.99, description: 'Casque sans fil premium', category: 'Électronique', image: 'https://example.com/casque.image' },
+            { name: 'Laptop', price: 1299.99, description: 'Ordinateur portable performant', category: 'Électronique', image: 'https://example.com/laptop.image' },
+            { name: 'Livre React', price: 29.99, description: 'Guide complet de React', category: 'Livres', image: 'https://example.com/reactbook.image' },
+            { name: 'T-shirt', price: 19.99, description: 'T-shirt coton bio', category: 'Vêtements', image: 'https://example.com/tshirt.image' },
+            { name: 'Cafetière', price: 79.99, description: 'Machine à café automatique', category: 'Maison', image: 'https://example.com/cafetiere.image' },
+            { name: 'Montre Connectée', price: 199.99, description: 'Montre fitness et notifications', category: 'Électronique', image: 'https://example.com/montre.image' },
+            { name: 'Sac à Dos', price: 49.99, description: 'Sac ergonomique pour ordinateur', category: 'Accessoires', image: 'https://example.com/sacdos.image' },
         ];
 
         await productModel.deleteMany({});

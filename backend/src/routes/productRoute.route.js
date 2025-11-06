@@ -4,9 +4,9 @@ import { getProducts, seedProducts } from '../controllers/productController.js';
 const productRouter = express.Router();
 
 // Route pour récupérer tous les produits
-productRouter.get('/products', getProducts);
+productRouter.get('/list', getProducts);
 
 // Route pour peupler la base de données avec des produits factices
-productRouter.get('/seed', seedProducts);
+productRouter.post('/seed', seedProducts);
 
 export default productRouter;
