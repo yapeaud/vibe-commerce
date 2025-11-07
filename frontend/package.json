@@ -2,7 +2,7 @@
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
-  "description": "Fontend pour le système de panier d'achat d'une plateforme e-commerce destiné au test Vibe Commerce",
+  "description": "Fontend pour le système de panier d'achat d'une plateforme e-commerce destiné au test Vibe Commerce instal",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,8 +11,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axios": "^1.13.2",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^7.9.5",
+    "react-scripts": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
