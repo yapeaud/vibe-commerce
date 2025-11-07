@@ -12,7 +12,8 @@ const getAllProducts = async (req, res) => {
             const fakeProducts = response.data;
 
             const transformedProducts = fakeProducts.map(product => ({
-                _id: `fake_${product.id}`,
+                //_id: `fake_${product.id}`,
+                productId: `fake_${product.id}`,
                 name: product.title,
                 price: product.price,
                 description: product.description,
@@ -77,7 +78,8 @@ const getProductsByCategory = async (req, res) => {
             const fakeProducts = response.data;
 
             const transformedProducts = fakeProducts.map(product => ({
-                _id: `fake_${product.id}`,
+                //_id: `fake_${product.id}`,
+                productId: `fake_${product.id}`,
                 name: product.title,
                 price: product.price,
                 description: product.description,
@@ -156,4 +158,4 @@ const seedWithLocalData = async (req, res) => {
     }
 };
 
-export { getAllProducts, getProductsByCategory, seedWithFakeStore, seedWithLocalData };
+export { getAllProducts, getCategories, getProductsByCategory, seedWithFakeStore, seedWithLocalData };

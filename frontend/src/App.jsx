@@ -4,6 +4,7 @@ import Cart from './components/Cart';
 import CheckoutForm from './components/CheckoutForm';
 import ReceiptModal from './components/ReceiptModal';
 import ApiStatus from './components/ApiStatus';
+import CategoryFilter from './components/CategoryFilter';
 import { 
   getProducts, 
   getCart, 
@@ -11,11 +12,16 @@ import {
   removeFromCart, 
   checkout, 
   healthCheck,
-  seedProducts 
+  seedProducts,
+  seedLocalProducts,
+  getCategories,
+  getProductsByCategory
 } from './services/api';
 
 function App() {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [cart, setCart] = useState({ items: [], total: 0 });
   const [showCheckout, setShowCheckout] = useState(false);
   const [receipt, setReceipt] = useState(null);
@@ -23,10 +29,16 @@ function App() {
   const [apiStatus, setApiStatus] = useState('checking');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     initializeApp();
   }, []);
+
+  useEffect(() => {
+    filterProducts();
+  }, [products, selectedCategory, searchTerm]);
 
   const initializeApp = async () => {
     try {
@@ -38,6 +50,7 @@ function App() {
       setApiStatus(isHealthy ? 'healthy' : 'error');
       
       if (isHealthy) {
+        await loadCategories();
         await loadProducts();
         await loadCart();
       } else {
@@ -52,17 +65,26 @@ function App() {
     }
   };
 
-  const loadProducts = async () => {
+  const loadCategories = async () => {
     try {
-      const data = await getProducts();
-      setProducts(data);
-      
-      // Si aucun produit n'est disponible, peupler la base de données
-      if (data.length === 0) {
-        await seedProducts();
-        const refreshedData = await getProducts();
-        setProducts(refreshedData);
+      const data = await getCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error('Erreur lors du chargement des catégories:', error);
+      // Utiliser des catégories par défaut
+      setCategories(['electronics', 'jewelery', 'men\'s clothing', 'women\'s clothing']);
+    }
+  };
+
+  const loadProducts = async (category = 'all') => {
+    try {
+      let data;
+      if (category === 'all') {
+        data = await getProducts();
+      } else {
+        data = await getProductsByCategory(category);
       }
+      setProducts(data);
     } catch (error) {
       console.error('Erreur lors du chargement des produits:', error);
       setError('Erreur lors du chargement des produits');
@@ -76,7 +98,6 @@ function App() {
       setCart(data);
     } catch (error) {
       console.error('Erreur lors du chargement du panier:', error);
-      // Ne pas bloquer l'application pour une erreur de panier
     }
   };
 
@@ -118,8 +139,51 @@ function App() {
     }
   };
 
+  const handleCategoryChange = async (category) => {
+    setSelectedCategory(category);
+    setLoading(true);
+    try {
+      await loadProducts(category === 'all' ? 'all' : category);
+    } catch (error) {
+      console.error('Erreur lors du changement de catégorie:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+  };
+
+  const filterProducts = () => {
+    let filtered = products;
+
+    if (searchTerm) {
+      filtered = filtered.filter(product =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredProducts(filtered);
+  };
+
   const handleRetry = () => {
     initializeApp();
+  };
+
+  const handleSeedProducts = async () => {
+    try {
+      setLoading(true);
+      await seedProducts();
+      await loadProducts();
+      setError(null);
+    } catch (error) {
+      console.error('Erreur lors du peuplement des produits:', error);
+      setError('Erreur lors du chargement des produits depuis Fake Store');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getCartItemCount = () => {
@@ -127,35 +191,12 @@ function App() {
   };
 
   // Affichage du chargement
-  if (loading) {
+  if (loading && products.length === 0) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement de l'application...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Affichage des erreurs critiques
-  if (error && products.length === 0) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
-          <div className="text-red-500 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Erreur de chargement</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <button
-            onClick={handleRetry}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition duration-200"
-          >
-            Réessayer
-          </button>
+          <p className="text-gray-600">Chargement des produits...</p>
         </div>
       </div>
     );
@@ -170,7 +211,7 @@ function App() {
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Vibe Commerce</h1>
               <p className="text-sm text-gray-500">
-                {/* Environnement: {import.meta.env.VITE_ENVIRONMENT} */}
+                Avec intégration Fake Store API
               </p>
             </div>
             <div className="flex space-x-4">
@@ -227,11 +268,22 @@ function App() {
       {/* Contenu principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'products' && (
-          <ProductList 
-            products={products} 
-            onAddToCart={handleAddToCart}
-            loading={loading}
-          />
+          <>
+            <div className="mb-6">
+              <CategoryFilter
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={handleCategoryChange}
+                onSearch={handleSearch}
+                searchTerm={searchTerm}
+              />
+            </div>
+            <ProductList 
+              products={filteredProducts}
+              onAddToCart={handleAddToCart}
+              loading={loading}
+            />
+          </>
         )}
         
         {activeTab === 'cart' && (
@@ -266,9 +318,9 @@ function App() {
       <footer className="bg-white border-t mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="text-center text-gray-500 text-sm">
-            <p>Vibe Commerce - Application de démonstration</p>
+            <p>Vibe Commerce - Intégration Fake Store API</p>
             <p className="mt-2">
-              API: {import.meta.env.VITE_BACKEND_URL}
+              Données fournies par: <a href="https://fakestoreapi.com" className="text-blue-500 hover:text-blue-600">Fake Store API</a>
             </p>
           </div>
         </div>

@@ -12,11 +12,11 @@ const apiClient = axios.create({
 // Intercepteur pour les requêtes
 apiClient.interceptors.request.use(
     (config) => {
-        console.log(`Making ${config.method?.toUpperCase()} request to: ${config.url}`);
+        console.log(`🔄 Making ${config.method?.toUpperCase()} request to: ${config.url}`);
         return config;
     },
     (error) => {
-        console.error('Request error:', error);
+        console.error('❌ Request error:', error);
         return Promise.reject(error);
     }
 );
@@ -27,18 +27,14 @@ apiClient.interceptors.response.use(
         return response;
     },
     (error) => {
-        console.error('API Error:', error.response?.data || error.message);
+        console.error('❌ API Error:', error.response?.data || error.message);
 
-        // Gestion centralisée des erreurs
         if (error.response) {
-            // Le serveur a répondu avec un code d'erreur
             const message = error.response.data?.message || 'Une erreur est survenue';
             throw new Error(message);
         } else if (error.request) {
-            // La requête a été faite mais aucune réponse n'a été reçue
             throw new Error('Impossible de contacter le serveur. Vérifiez votre connexion.');
         } else {
-            // Une erreur s'est produite lors de la configuration de la requête
             throw new Error('Erreur de configuration de la requête');
         }
     }
@@ -47,10 +43,28 @@ apiClient.interceptors.response.use(
 // Fonctions API
 export const getProducts = async () => {
     try {
-        const response = await apiClient.get('/products/list');
+        const response = await apiClient.get('/products');
         return response.data;
     } catch (error) {
         throw new Error(`Échec de la récupération des produits: ${error.message}`);
+    }
+};
+
+export const getCategories = async () => {
+    try {
+        const response = await apiClient.get('/products/categories');
+        return response.data;
+    } catch (error) {
+        throw new Error(`Échec de la récupération des catégories: ${error.message}`);
+    }
+};
+
+export const getProductsByCategory = async (category) => {
+    try {
+        const response = await apiClient.get(`/products/category/${category}`);
+        return response.data;
+    } catch (error) {
+        throw new Error(`Échec de la récupération des produits par catégorie: ${error.message}`);
     }
 };
 
@@ -99,10 +113,19 @@ export const seedProducts = async () => {
     }
 };
 
+export const seedLocalProducts = async () => {
+    try {
+        const response = await apiClient.post('/products/local-seed');
+        return response.data;
+    } catch (error) {
+        throw new Error(`Échec du peuplement des produits locaux: ${error.message}`);
+    }
+};
+
 // Vérification de la santé de l'API
 export const healthCheck = async () => {
     try {
-        const response = await apiClient.get('/products/list');
+        const response = await apiClient.get('/products');
         return response.status === 200;
     } catch (error) {
         return false;

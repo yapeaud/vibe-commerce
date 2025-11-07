@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllProducts, getProductsByCategory, seedWithFakeStore, seedWithLocalData } from '../controllers/productController.js';
+import { getAllProducts, getCategories, getProductsByCategory, seedWithFakeStore, seedWithLocalData } from '../controllers/productController.js';
 
 const productRouter = express.Router();
 
